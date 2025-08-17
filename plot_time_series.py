@@ -24,15 +24,17 @@ for file in file_names:
     df = pd.read_csv(file)
     f_uuid = file.split('\\')[-1].split('_')[0]
 
-    ekman,reynolds,n_rad_max,n_leg_max = pd.read_sql(f"SELECT ekman, reynolds, n_rad_max, n_leg_max FROM run_info WHERE folder_uuid = '{f_uuid}'", con=conn).iloc[0]
+    ekman,reynolds,n_rad_max,n_leg_max,time_step = pd.read_sql(f"SELECT ekman, reynolds, n_rad_max, n_leg_max, time_step FROM run_info WHERE folder_uuid = '{f_uuid}'", con=conn).iloc[0]
     
     
-    label_str = "{:.2f} {:.2f} {:d} {:d}".format(np.log10(ekman), reynolds, int(n_rad_max), int(n_leg_max))
-    ax.plot(df['time']/2/np.pi, df['KE'], label=label_str)
+    label_str = "{:.2f} {:.2f} {:d} {:d} {:.2f}".format(np.log10(ekman), reynolds, int(n_rad_max), int(n_leg_max), time_step)
+    ax.plot(df['time']/2/np.pi, df['KE'], label=label_str,alpha=0.5,ls='dashed')
 
 ax.set_yscale('log')
-ax.set_xlabel('Time', fontsize=14)
+ax.set_xlabel('Time (rotation periods)', fontsize=14)
 ax.set_ylabel('Kinetic Energy', fontsize=14)
 ax.legend(loc='upper right', fontsize=12, ncol=2)
+
+plt.show()
 fig.savefig("KE_plot.png", dpi=300, bbox_inches='tight')
 
